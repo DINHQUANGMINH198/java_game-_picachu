@@ -27,7 +27,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main();
+        Window wd = new Window();
+        wd.show();
+//        new Main();
     }
 
     class MyTimeCount extends Thread {
