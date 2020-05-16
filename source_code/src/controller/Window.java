@@ -216,7 +216,7 @@ public class Window extends javax.swing.JFrame {
     private void jButton_sign_upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sign_upActionPerformed
         // TODO add your handling code here:
         Database db = new Database();
-        db.CheckConn("kn", "1");
+        db.CheckConn("minh", "minh");
         String name = jTextField_sign_up_name.getText();
         String email = jTextField_sign_up_email.getText();
         String phone_nr = jTextField_sign_up_phone.getText();
@@ -239,7 +239,7 @@ public class Window extends javax.swing.JFrame {
         // TODO add your handling code here:
         Main main;
         Database db = new Database();
-        db.CheckConn("kn", "1");
+        db.CheckConn("minh", "minh");
         int id = Integer.parseInt(jTextField_log_in_id.getText());
         String pass = jTextField_log_in_password.getText();
         db.LogIn(id, pass, user);
