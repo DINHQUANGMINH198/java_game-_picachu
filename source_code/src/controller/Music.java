@@ -26,7 +26,7 @@ public class Music {
         AudioData MD;
 
         try {
-            InputStream test = new FileInputStream("D:\\musicpokemon.wav");
+            InputStream test = new FileInputStream("musicpokemon.wav");
             BGM = new AudioStream(test);
 
             //MD = BGM.getData();
@@ -44,7 +44,7 @@ public class Music {
         AudioData MD;
 
         try {
-            InputStream test = new FileInputStream("D:\\winning.wav");
+            InputStream test = new FileInputStream("winning.wav");
             BGM = new AudioStream(test);
 
             //MD = BGM.getData();
@@ -62,7 +62,7 @@ public class Music {
         AudioData MD;
 
         try {
-            InputStream test = new FileInputStream("D:\\lose.wav");
+            InputStream test = new FileInputStream("lose.wav");
             BGM = new AudioStream(test);
 
             //MD = BGM.getData();
@@ -80,7 +80,7 @@ public class Music {
         AudioData MD;
 
         try {
-            InputStream test = new FileInputStream("D:\\warning.wav");
+            InputStream test = new FileInputStream("warning.wav");
             BGM = new AudioStream(test);
 
             //MD = BGM.getData();

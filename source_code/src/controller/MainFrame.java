@@ -184,7 +184,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     public boolean showDialogNewGame(String message, String title, int t) {
         pause = true;
         resume = false;
-        ap.stop(as);
+       if(t!=0){
+                    ap.stop(as);
+             }
         int select = JOptionPane.showOptionDialog(null, message, title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                 null, null);
