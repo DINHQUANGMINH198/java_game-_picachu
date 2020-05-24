@@ -5,14 +5,24 @@
  */
 package controller;
 
+import Database.Database;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -25,7 +35,7 @@ import sun.audio.AudioStream;
 
 /**
  *
- * @author DuyDL2
+ * @author kn
  */
 public class ButtonEvent extends JPanel implements ActionListener {
 
@@ -43,6 +53,12 @@ public class ButtonEvent extends JPanel implements ActionListener {
     private MainFrame frame;
     private Color backGroundColor = Color.lightGray;
     private int item;
+    private int[][] save;
+    private String db_user = "kn";
+    private String db_pass = "1";
+    
+    
+    
     Music m = new Music();
     AudioStream as = null;
     AudioPlayer ap = AudioPlayer.player;
@@ -63,11 +79,61 @@ public class ButtonEvent extends JPanel implements ActionListener {
         newGame();
 
     }
+    
+    public ButtonEvent(MainFrame frame, int row, int col, int[][] matrix) {
+        this.frame = frame;
+        this.row = row + 2;
+        this.col = col + 2;
+        item = row * col / 2;
+
+        setLayout(new GridLayout(row, col, bound, bound));
+        setBackground(backGroundColor);
+        setPreferredSize(new Dimension((size + bound) * col, (size + bound)
+                * row));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setAlignmentY(JPanel.CENTER_ALIGNMENT);
+
+        loadExistGame();
+
+    }
 
     public void newGame() {
         algorithm = new Controller(this.frame, this.row, this.col);
         addArrayButton();
 
+    }
+    
+    public void loadExistGame() {
+        algorithm = new Controller(this.frame, this.row, this.col);
+//        score = Window.score;
+//        frame.lbScore.setText(score + "");
+        continueArrayButton(Window.matrix);
+//        for (int i = 0; i < 10; i ++) {
+//            for (int j = 0; j < 10; j++) {
+//                System.out.println(Window.matrix[i][j]);
+//            }
+//        }
+    }
+    
+    public void saveGame(int time) {
+        Database db = new Database();
+        File f_userid = new File("ID_User.txt");
+        String data = "";
+        String signal = "";
+        try {
+            Scanner reader = new Scanner(f_userid);
+            data = reader.nextLine();
+            signal = reader.nextLine();
+            System.out.println("reader: " + data);
+            reader.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ButtonEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        db.CheckConn(db_user, db_pass);
+        System.out.println("now it save");
+        save = algorithm.getMatrix();
+        db.SavingGame(save, time, score, Integer.parseInt(data), signal);
     }
 
     private void addArrayButton() {
@@ -81,6 +147,22 @@ public class ButtonEvent extends JPanel implements ActionListener {
             }
         }
     }
+    
+    public void continueArrayButton(int[][] matrix) {
+        btn = new JButton[row][col];
+        for (int i = 1; i < row - 1; i++) {
+            for (int j = 1; j < col - 1; j++) {
+                btn[i][j] = createButton(i + "," + j);
+                System.out.println("matrix: " + matrix[i][j]);
+                Icon icon = getIcon(matrix[i][j]);
+                btn[i][j].setIcon(icon);
+                if (matrix[i][j] == 0) {
+                    setDisable(btn[i][j]);
+                }
+                add(btn[i][j]);
+            }
+        }
+    }
 
     private Icon getIcon(int index) {
         int width = 48, height = 48;
@@ -89,7 +171,6 @@ public class ButtonEvent extends JPanel implements ActionListener {
         Icon icon = new ImageIcon(image.getScaledInstance(width, height,
                 image.SCALE_SMOOTH));
         return icon;
-
     }
 
     private JButton createButton(String action) {
@@ -144,6 +225,18 @@ public class ButtonEvent extends JPanel implements ActionListener {
             p2 = null;
             System.out.println("done");
             if (item == 0) {
+                File file = new File("ID_User.txt");
+                Scanner reader;
+                try {
+                    reader = new Scanner(file);
+                    int data = Integer.parseInt(reader.nextLine());
+                    System.out.println("data: " + data);
+                    Database db = new Database();
+                    db.CheckConn(db_user, db_pass);
+                    db.setHightResult(data, frame.time, score);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(ButtonEvent.class.getName()).log(Level.SEVERE, null, ex);
+                }                
                 ap.stop();
                 as = m.winningMusic();
                 ap.start(as);

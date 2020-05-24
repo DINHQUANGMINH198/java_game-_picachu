@@ -27,7 +27,7 @@ import sun.audio.ContinuousAudioDataStream;
 
 /**
  *
- * @author DuyDL2
+ * @author kn
  */
 public class MainFrame extends JFrame implements ActionListener, Runnable {
 
@@ -42,8 +42,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     public JLabel lbScore;
     private JProgressBar progressTime;
     private JButton btnNewGame;
-    private ButtonEvent graphicsPanel;
+    public static ButtonEvent graphicsPanel;
     private JPanel mainPanel;
+    private JButton btnSaveGame;
 
     private boolean pause = false;
     private boolean resume = false;
@@ -62,6 +63,81 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
         as = m.startMusic();
         ap.start(as);
 
+    }
+    
+    public MainFrame(int[][] matrix, int time, int score) {
+        add(mainPanel = loadMainPanel(matrix, time, score));
+        setTitle("Pokemon Game");
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(width, height);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        as = m.startMusic();
+        ap.start(as);
+
+    }
+    
+    private JPanel loadMainPanel(int[][] matrix, int time, int score) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(loadGraphicsPanel(matrix), BorderLayout.CENTER);
+        panel.add(loadControlPanel(time, score), BorderLayout.EAST);
+        panel.add(loadStatusPanel(), BorderLayout.PAGE_END);
+        return panel;
+    }
+    
+    private JPanel loadGraphicsPanel(int[][] matrix) {
+        graphicsPanel = new ButtonEvent(this, row, col, matrix);
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.gray);
+        panel.add(graphicsPanel);
+        return panel;
+    }
+    
+    private JPanel loadControlPanel(int time, int score) {
+        lbScore = new JLabel("" + score);
+        progressTime = new JProgressBar(0, 100);
+        progressTime.setValue(100);
+        
+        JPanel panelLeft = new JPanel(new GridLayout(0, 1, 5, 5));
+        panelLeft.add(new JLabel("Score:"));
+        panelLeft.add(new JLabel("Time:"));
+
+        JPanel panelCenter = new JPanel(new GridLayout(0, 1, 5, 5));
+        panelCenter.add(lbScore);
+        panelCenter.add(progressTime);
+
+        JPanel panelScoreAndTime = new JPanel(new BorderLayout(5, 0));
+        panelScoreAndTime.add(panelLeft, BorderLayout.WEST);
+        panelScoreAndTime.add(panelCenter, BorderLayout.CENTER);
+
+        // create panel container panelScoreAndTime and button new game
+        JPanel panelControl = new JPanel(new BorderLayout(10, 10));
+        panelControl.setBorder(new EmptyBorder(10, 3, 5, 3));
+        panelControl.add(panelScoreAndTime, BorderLayout.CENTER);
+        panelControl.add(btnNewGame = createButton("New Game"),
+                BorderLayout.PAGE_END);
+        
+        // saving button
+        JPanel panelControl1 = new JPanel(new BorderLayout(10, 10));
+        panelControl1.setBorder(new EmptyBorder(1, 1, 1, 1));
+        panelControl1.add(btnSaveGame = createButton("Save"),
+                BorderLayout.PAGE_END);
+
+        // use panel set Layout BorderLayout to panel control in top
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new TitledBorder("Status"));
+        panel.add(panelControl, BorderLayout.PAGE_START);
+        panel.add(panelControl1, BorderLayout.PAGE_END);
+
+        return panel;
+    }
+    
+    private JPanel loadStatusPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.setBackground(Color.lightGray);
+
+        return panel;
     }
 
     private JPanel createMainPanel() {
@@ -85,7 +161,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
         // lbTime = new JLabel("0");
         progressTime = new JProgressBar(0, 100);
         progressTime.setValue(100);
-
+        
         // create panel container score and time
         JPanel panelLeft = new JPanel(new GridLayout(0, 1, 5, 5));
         panelLeft.add(new JLabel("Score:"));
@@ -105,11 +181,18 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
         panelControl.add(panelScoreAndTime, BorderLayout.CENTER);
         panelControl.add(btnNewGame = createButton("New Game"),
                 BorderLayout.PAGE_END);
+        
+        // saving button
+        JPanel panelControl1 = new JPanel(new BorderLayout(10, 10));
+        panelControl1.setBorder(new EmptyBorder(1, 1, 1, 1));
+        panelControl1.add(btnSaveGame = createButton("Save"),
+                BorderLayout.PAGE_END);
 
         // use panel set Layout BorderLayout to panel control in top
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder("Status"));
         panel.add(panelControl, BorderLayout.PAGE_START);
+        panel.add(panelControl1, BorderLayout.PAGE_END);
 
         return panel;
     }
@@ -137,11 +220,26 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
         mainPanel.setVisible(true);
         lbScore.setText("0");
     }
+    
+    public void loadExistGame() {
+        time = Window.time;
+        
+    }
+    
+    public void saveGame() {      
+        System.out.println("Saving game");
+        graphicsPanel.saveGame(time);
+        dispose();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnNewGame) {
             showDialogNewGame("Your game hasn't done. Do you want to create a new game?", "Warning", 0);
+        }
+        
+        if (e.getSource() == btnSaveGame) {
+            showDialogSaveGame("Do you want to save game?", "Saving", 0);
         }
     }
 
@@ -184,9 +282,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     public boolean showDialogNewGame(String message, String title, int t) {
         pause = true;
         resume = false;
-       if(t!=0){
-                    ap.stop(as);
-             }
+        if(t!=0){
+            ap.stop(as);
+        }
         int select = JOptionPane.showOptionDialog(null, message, title,
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                 null, null);
@@ -206,4 +304,29 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
             }
         }
     }
+    
+    public boolean showDialogSaveGame(String message, String title, int t) {
+        pause = true;
+        resume = false;
+        ap.stop(as);
+        int select = JOptionPane.showOptionDialog(null, message, title,
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                null, null);
+        if (select == 0) {
+            pause = false;
+            ap.start(as);
+            saveGame();
+            return true;
+        } else {
+            if (t == 1) {
+                System.exit(0);
+                return false;
+            } else {
+                ap.start(as);
+                resume = true;
+                return true;
+            }
+        }
+    }
+    
 }

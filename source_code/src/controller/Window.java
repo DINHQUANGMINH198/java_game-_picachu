@@ -5,6 +5,13 @@
  */
 package controller;
 import Database.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import sign_up.SignUpProcess;
 
 /**
@@ -18,10 +25,17 @@ public class Window extends javax.swing.JFrame {
     private Icons icon = new Icons();
     private Highest_result hi_re = new Highest_result();
     private Checkpoint check = new Checkpoint();
+    private String db_user = "kn";
+    private String db_pass = "1";
+    
+    public static int[][] matrix = null;
+    public static int time = 0;
+    public static int score = 0;
     
     /**
      * Creates new form Window
      */
+    
     public Window() {
         initComponents();
     }
@@ -46,15 +60,19 @@ public class Window extends javax.swing.JFrame {
         jTextField_sign_up_pass = new javax.swing.JTextField();
         jLabel_sign_up = new javax.swing.JLabel();
         jButton_sign_up = new javax.swing.JButton();
-        jTextField_sign_up_check = new javax.swing.JTextField();
-        jLabel_ID = new javax.swing.JLabel();
+        jLabel_check_sign_up = new javax.swing.JLabel();
+        jFrame2 = new javax.swing.JFrame();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        javax.swing.JLabel jLabel_user_name = new javax.swing.JLabel();
         jLabel_password = new javax.swing.JLabel();
-        jTextField_log_in_id = new javax.swing.JTextField();
         jTextField_log_in_password = new javax.swing.JTextField();
         jLabel_log_in = new javax.swing.JLabel();
         jButton_sign_up_here = new javax.swing.JButton();
         jButton_log_in = new javax.swing.JButton();
-        jTextField_log_in_check = new javax.swing.JTextField();
+        jTextField_log_in_user_name = new javax.swing.JTextField();
+        jLabel_check_log_in = new javax.swing.JLabel();
+        jButton_best = new javax.swing.JButton();
 
         jLabel_sign_up_name.setText("Name");
 
@@ -77,6 +95,15 @@ public class Window extends javax.swing.JFrame {
         jFrame1.getContentPane().setLayout(jFrame1Layout);
         jFrame1Layout.setHorizontalGroup(
             jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jFrame1Layout.createSequentialGroup()
+                .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jFrame1Layout.createSequentialGroup()
+                        .addGap(171, 171, 171)
+                        .addComponent(jLabel_sign_up))
+                    .addGroup(jFrame1Layout.createSequentialGroup()
+                        .addGap(152, 152, 152)
+                        .addComponent(jButton_sign_up)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrame1Layout.createSequentialGroup()
                 .addGap(86, 86, 86)
                 .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -86,23 +113,15 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jLabel_sign_up_pass, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField_sign_up_email)
+                    .addComponent(jTextField_sign_up_email, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                     .addComponent(jTextField_sign_up_name, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField_sign_up_phone)
                     .addComponent(jTextField_sign_up_pass))
                 .addGap(81, 81, 81))
-            .addGroup(jFrame1Layout.createSequentialGroup()
-                .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jFrame1Layout.createSequentialGroup()
-                        .addGap(171, 171, 171)
-                        .addComponent(jLabel_sign_up))
-                    .addGroup(jFrame1Layout.createSequentialGroup()
-                        .addGap(152, 152, 152)
-                        .addComponent(jButton_sign_up))
-                    .addGroup(jFrame1Layout.createSequentialGroup()
-                        .addGap(95, 95, 95)
-                        .addComponent(jTextField_sign_up_check, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(120, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrame1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel_check_sign_up, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jFrame1Layout.setVerticalGroup(
             jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -127,15 +146,53 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jLabel_sign_up_pass))
                 .addGap(18, 18, 18)
                 .addComponent(jButton_sign_up)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addComponent(jTextField_sign_up_check, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel_check_sign_up, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                 .addContainerGap())
+        );
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Rank", "User name", "Time", "Score"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTable2);
+
+        javax.swing.GroupLayout jFrame2Layout = new javax.swing.GroupLayout(jFrame2.getContentPane());
+        jFrame2.getContentPane().setLayout(jFrame2Layout);
+        jFrame2Layout.setHorizontalGroup(
+            jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrame2Layout.createSequentialGroup()
+                .addContainerGap(101, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(91, 91, 91))
+        );
+        jFrame2Layout.setVerticalGroup(
+            jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jFrame2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("POKE'MON game");
 
-        jLabel_ID.setText("ID");
+        jLabel_user_name.setText("User name");
+        jLabel_user_name.setToolTipText("");
 
         jLabel_password.setText("Password");
 
@@ -155,32 +212,38 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
+        jButton_best.setText("Best of 3");
+        jButton_best.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_bestActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(82, 82, 82)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addComponent(jLabel_log_in))
-                    .addComponent(jButton_sign_up_here, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_password)
-                            .addComponent(jLabel_ID))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton_log_in)
+                .addGap(52, 52, 52)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel_check_log_in, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(66, 66, 66)
+                            .addComponent(jLabel_log_in))
+                        .addComponent(jButton_sign_up_here, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel_password)
+                                .addComponent(jLabel_user_name))
+                            .addGap(18, 18, 18)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jTextField_log_in_password, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
-                                .addComponent(jTextField_log_in_id)))))
-                .addContainerGap(67, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
-                .addComponent(jTextField_log_in_check, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                                .addComponent(jTextField_log_in_user_name)
+                                .addComponent(jButton_log_in)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addComponent(jButton_best)
+                .addGap(117, 117, 117))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,17 +252,23 @@ public class Window extends javax.swing.JFrame {
                 .addComponent(jLabel_log_in)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_ID)
-                    .addComponent(jTextField_log_in_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel_user_name)
+                    .addComponent(jTextField_log_in_user_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField_log_in_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel_password))
-                .addGap(12, 12, 12)
-                .addComponent(jButton_log_in)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField_log_in_check, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jButton_log_in)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel_check_log_in, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_best)
+                        .addGap(33, 33, 33)))
                 .addComponent(jButton_sign_up_here)
                 .addGap(29, 29, 29))
         );
@@ -216,41 +285,113 @@ public class Window extends javax.swing.JFrame {
     private void jButton_sign_upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sign_upActionPerformed
         // TODO add your handling code here:
         Database db = new Database();
-        db.CheckConn("minh", "minh");
+        db.CheckConn(db_user, db_pass);
         String name = jTextField_sign_up_name.getText();
         String email = jTextField_sign_up_email.getText();
         String phone_nr = jTextField_sign_up_phone.getText();
         String pass = jTextField_sign_up_pass.getText();
         System.out.println(name + "\n " + email + "\n "+ phone_nr + "\n "+ pass);
+        db.checkSignUp(user, name);
+        
+        if (user.getUser_name() != null) {
+            jLabel_check_sign_up.setText("User name has been used, try another name!");
+            return;
+        }
         
         if ((int)sign_up_prod.ProcessEmail(email) == -2) {
-            jTextField_sign_up_check.setText("Invalid email address, try again");
+            jLabel_check_sign_up.setText("Invalid email address, try again");
             return;
         }
         if (sign_up_prod.ProcessPhNumber(phone_nr) == -1) {
-            jTextField_sign_up_check.setText("Ivalid phone number");
+            jLabel_check_sign_up.setText("Ivalid phone number");
             return;
         }
-        jTextField_sign_up_check.setText("Sign up successfully");
+        
+        jLabel_check_sign_up.setText("Sign up successfully");
         db.SignUp(name, email, phone_nr, pass);
     }//GEN-LAST:event_jButton_sign_upActionPerformed
 
     private void jButton_log_inActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_log_inActionPerformed
-        // TODO add your handling code here:
-        Main main;
-        Database db = new Database();
-        db.CheckConn("minh", "minh");
-        int id = Integer.parseInt(jTextField_log_in_id.getText());
-        String pass = jTextField_log_in_password.getText();
-        db.LogIn(id, pass, user);
-        if (user.getUser_name() == null) {
-            jTextField_log_in_check.setText("ID or password not corrected, try again");
-            return;
+        try {
+            // TODO add your handling code here:
+            Main main;
+            
+            File f_user_id = new File("ID_User.txt");
+            FileWriter writer = new FileWriter(f_user_id, false);
+            Database db = new Database();
+            System.out.println(db.CheckConn(db_user, db_pass));
+            String user_name = jTextField_log_in_user_name.getText();
+            String pass = jTextField_log_in_password.getText();
+            db.LogIn(user_name, pass, user);
+            if (user.getUser_name() == null) {
+                jLabel_check_log_in.setText("ID or password not corrected, try again");
+                return;
+            }
+
+            jLabel_check_log_in.setText("Welcome " + user.getUser_name() + ". ID: " + user.getUser_id());
+            if (db.continuePlay(user.getUser_id())) {
+                if (showDialogContinueGame("Do you want to continue your checkpoint?", "Continue game", 0)) {
+                    matrix = db.getMatrix(user.getUser_id());
+                    time = db.getTime(user.getUser_id());
+                    score = db.getScore(user.getUser_id());
+                    MainFrame mframe = new MainFrame(matrix, time, score);
+                }
+            } else {
+                new Main();  
+            }
+            writer.write(Integer.toString(user.getUser_id()) + "\n" + "0");
+            writer.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jTextField_log_in_check.setText("Welcome " + user.getUser_name());
-        new Main();
     }//GEN-LAST:event_jButton_log_inActionPerformed
 
+    private void jButton_bestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_bestActionPerformed
+        // TODO add your handling code here:
+        jFrame2.setSize(600, 300);
+        jFrame2.setTitle("TOP 3 BEST PLAYERS");
+        jFrame2.setVisible(true);
+        showBest();
+    }//GEN-LAST:event_jButton_bestActionPerformed
+
+    private void showBest() {
+        
+        Highest_result result1 = new Highest_result();
+        Highest_result result2 = new Highest_result();
+        Highest_result result3 = new Highest_result();
+        Database db = new Database();
+        db.CheckConn(db_user, db_pass);
+        db.getTop3(result1, result2, result3);
+        
+        String[][] data = {
+            {"1", result1.getResult_name(), Integer.toString(result1.getResult_time()), Integer.toString(result1.getResult_score())},
+            {"2", result2.getResult_name(), Integer.toString(result2.getResult_time()), Integer.toString(result2.getResult_score())},
+            {"3", result3.getResult_name(), Integer.toString(result3.getResult_time()), Integer.toString(result3.getResult_score())},
+        };
+        
+        String[] title = {"Rank", "User name", "Time", "Score"};
+        
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                jTable2.setValueAt(data[i][j], i, j);
+            }
+        }
+    }
+    public boolean showDialogContinueGame(String message, String title, int t) {
+
+        int select = JOptionPane.showOptionDialog(null, message, title,
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                null, null);
+        if (select == 0) {
+            return true;
+        } else {
+            new Main();
+            return false;
+        }
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -287,22 +428,25 @@ public class Window extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton_best;
     private javax.swing.JButton jButton_log_in;
     private javax.swing.JButton jButton_sign_up;
     private javax.swing.JButton jButton_sign_up_here;
     private javax.swing.JFrame jFrame1;
+    private javax.swing.JFrame jFrame2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel_ID;
+    private javax.swing.JLabel jLabel_check_log_in;
+    private javax.swing.JLabel jLabel_check_sign_up;
     private javax.swing.JLabel jLabel_log_in;
     private javax.swing.JLabel jLabel_password;
     private javax.swing.JLabel jLabel_sign_up;
     private javax.swing.JLabel jLabel_sign_up_name;
     private javax.swing.JLabel jLabel_sign_up_pass;
     private javax.swing.JLabel jLabel_sign_up_phone;
-    private javax.swing.JTextField jTextField_log_in_check;
-    private javax.swing.JTextField jTextField_log_in_id;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField_log_in_password;
-    private javax.swing.JTextField jTextField_sign_up_check;
+    private javax.swing.JTextField jTextField_log_in_user_name;
     private javax.swing.JTextField jTextField_sign_up_email;
     private javax.swing.JTextField jTextField_sign_up_name;
     private javax.swing.JTextField jTextField_sign_up_pass;

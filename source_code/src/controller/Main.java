@@ -10,7 +10,7 @@ import sun.audio.AudioStream;
 
 /**
  *
- * @author DuyDL2
+ * @author kn
  */
 public class Main {
 

@@ -9,7 +9,7 @@ import java.awt.Point;
 
 /**
  *
- * @author DuyDL2
+ * @author kn
  */
 public class PointLine {
 

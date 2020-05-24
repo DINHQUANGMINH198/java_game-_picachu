@@ -11,8 +11,27 @@ package Database;
  */
 public class Highest_result {
     private int result_id;
-    private String result_score;
+    private int result_score;
+    private int result_time;
+    private int result_user_id;
+    private String result_name;
 
+    public int getResult_user_id() {
+        return result_user_id;
+    }
+
+    public void setResult_user_id(int result_user_id) {
+        this.result_user_id = result_user_id;
+    }
+
+    public String getResult_name() {
+        return result_name;
+    }
+
+    public void setResult_name(String result_name) {
+        this.result_name = result_name;
+    }
+    
     public int getResult_id() {
         return result_id;
     }
@@ -21,29 +40,20 @@ public class Highest_result {
         this.result_id = result_id;
     }
 
-    public String getResult_score() {
+    public int getResult_score() {
         return result_score;
     }
 
-    public void setResult_score(String result_score) {
+    public void setResult_score(int result_score) {
         this.result_score = result_score;
     }
 
-    public String getResult_time() {
+    public int getResult_time() {
         return result_time;
     }
 
-    public void setResult_time(String result_time) {
+    public void setResult_time(int result_time) {
         this.result_time = result_time;
     }
 
-    public String getResult_date() {
-        return result_date;
-    }
-
-    public void setResult_date(String result_date) {
-        this.result_date = result_date;
-    }
-    private String result_time;
-    private String result_date;
 }
